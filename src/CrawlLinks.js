@@ -1,5 +1,6 @@
 import React, { useState, useContext } from 'react';
 import DataContext from './DataContext';
+// import API_URL from './config';
 
 function CrawlLinks() {
     const { data, setData } = useContext(DataContext);
@@ -10,11 +11,11 @@ function CrawlLinks() {
         try {
             const response = await fetch('https://fin-back-odw1.onrender.com/crawl', {
                 method: 'POST',
+                mode:'no-cors',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({ url }),
-                mode: 'cors', // Ensure CORS is handled properly
             });
 
             if (!response.ok) {
@@ -30,9 +31,7 @@ function CrawlLinks() {
 
     const fetchData = async () => {
         try {
-            const response = await fetch("https://fin-back-odw1.onrender.com/members", {
-                mode: 'cors', // Ensure CORS is handled properly
-            });
+            const response = await fetch("https://fin-back-odw1.onrender.com/members");
             if (!response.ok) {
                 throw new Error('Failed to fetch data');
             }
@@ -45,25 +44,18 @@ function CrawlLinks() {
     };
 
     const handleDownload = () => {
-        fetch('https://fin-back-odw1.onrender.com/download', {
-            mode: 'cors', // Ensure CORS is handled properly
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Download request failed');
-            }
-            return response.blob();
-        })
-        .then(blob => {
-            const url = window.URL.createObjectURL(new Blob([blob]));
-            const link = document.createElement('a');
-            link.href = url;
-            link.setAttribute('download', 'broken_links.pdf');
-            document.body.appendChild(link);
-            link.click();
-            link.parentNode.removeChild(link);
-        })
-        .catch(err => console.error('Download failed:', err));
+        fetch('https://fin-back-odw1.onrender.com/download')
+            .then(response => response.blob())
+            .then(blob => {
+                const url = window.URL.createObjectURL(new Blob([blob]));
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', 'broken_links.pdf');
+                document.body.appendChild(link);
+                link.click();
+                link.parentNode.removeChild(link);
+            })
+            .catch(err => console.error('Download failed:', err));
     };
 
     return (

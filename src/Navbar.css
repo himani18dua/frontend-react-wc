@@ -1,0 +1,22 @@
+/* Navbar.css */
+nav {
+    background-color: #a1c4fd; /* Dark background color */
+    padding: 10px; /* Padding around the links */
+    text-align:center;
+}
+
+nav a {
+    color: white; /* Text color for links */
+    text-decoration: none; /* Remove default underline */
+    margin: 0 10px; /* Margin between links */
+    font-size: 18px; /* Font size */
+    font-weight: bold; /* Bold text */
+}
+
+nav a:hover {
+    text-decoration: underline; /* Underline on hover */
+}
+
+nav a.active {
+    color: yellow; /* Active link color */
+}

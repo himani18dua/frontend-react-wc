@@ -1,5 +1,6 @@
 import React, { useState, useContext } from 'react';
 import DataContext from './DataContext';
+// import API_URL from './config';
 
 function CrawlLinks() {
     const { data, setData } = useContext(DataContext);
@@ -8,7 +9,7 @@ function CrawlLinks() {
     const handleCrawl = async () => {
         setData(prevData => ({ ...prevData, loadingLinks: true, errorLinks: null }));
         try {
-            const response = await fetch('http://localhost:5000/crawl', {
+            const response = await fetch('https://fin-back-odw1.onrender.com/crawl', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -29,7 +30,7 @@ function CrawlLinks() {
 
     const fetchData = async () => {
         try {
-            const response = await fetch("http://localhost:5000/members");
+            const response = await fetch("https://fin-back-odw1.onrender.com/members");
             if (!response.ok) {
                 throw new Error('Failed to fetch data');
             }
@@ -42,7 +43,7 @@ function CrawlLinks() {
     };
 
     const handleDownload = () => {
-        fetch('http://localhost:5000/download')
+        fetch('https://fin-back-odw1.onrender.com/download')
             .then(response => response.blob())
             .then(blob => {
                 const url = window.URL.createObjectURL(new Blob([blob]));

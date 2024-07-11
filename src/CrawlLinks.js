@@ -11,7 +11,6 @@ function CrawlLinks() {
         try {
             const response = await fetch('https://fin-back-odw1.onrender.com/crawl', {
                 method: 'POST',
-                mode:'no-cors',
                 headers: {
                     'Content-Type': 'application/json',
                 },

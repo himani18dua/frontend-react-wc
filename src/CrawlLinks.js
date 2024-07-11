@@ -30,7 +30,7 @@ function CrawlLinks() {
 
     const fetchData = async () => {
         try {
-            const response = await fetch("https://flask-sample-ff32.onrender.com");
+            const response = await fetch("https://fin-back-odw1.onrender.com/members");
             if (!response.ok) {
                 throw new Error('Failed to fetch data');
             }

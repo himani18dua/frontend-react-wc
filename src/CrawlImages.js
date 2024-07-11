@@ -1,14 +1,15 @@
 import React, { useState, useContext } from 'react';
 import DataContext from './DataContext';
+// import API_URL from './config';
 
-function CrawlImages() {
+function CrawlLinks() {
     const { data, setData } = useContext(DataContext);
     const [url, setUrl] = useState('');
 
-    const handleImageCrawl = async () => {
-        setData(prevData => ({ ...prevData, loadingImages: true, errorImages: null }));
+    const handleCrawl = async () => {
+        setData(prevData => ({ ...prevData, loadingLinks: true, errorLinks: null }));
         try {
-            const response = await fetch('http://localhost:5000/img-crawl', {
+            const response = await fetch('https://fin-back-odw1.onrender.com/crawl', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -17,73 +18,76 @@ function CrawlImages() {
             });
 
             if (!response.ok) {
-                throw new Error('Image Crawl request failed');
+                throw new Error('Crawl request failed');
             }
 
             await new Promise(resolve => setTimeout(resolve, 2000));
-            fetchImageData();
+            fetchData();
         } catch (err) {
-            setData(prevData => ({ ...prevData, errorImages: err.message, crawlImagesData: [], loadingImages: false }));
+            setData(prevData => ({ ...prevData, errorLinks: err.message, crawlLinksData: [], loadingLinks: false }));
         }
     };
 
-    const fetchImageData = async () => {
+    const fetchData = async () => {
         try {
-            const response = await fetch("http://localhost:5000/img-members");
+            const response = await fetch("https://fin-back-odw1.onrender.com/members");
             if (!response.ok) {
-                throw new Error('Failed to fetch image data');
+                throw new Error('Failed to fetch data');
             }
             const data = await response.json();
-            setData(prevData => ({ ...prevData, crawlImagesData: data, loadingImages: false }));
+            setData(prevData => ({ ...prevData, crawlLinksData: data, loadingLinks: false }));
         } catch (error) {
-            console.error('Error fetching image data:', error);
-            setData(prevData => ({ ...prevData, errorImages: 'Failed to fetch image data', loadingImages: false }));
+            console.error('Error fetching data:', error);
+            setData(prevData => ({ ...prevData, errorLinks: 'Failed to fetch data', loadingLinks: false }));
         }
     };
 
-    const handleImageDownload = () => {
-        fetch('http://localhost:5000/img-download')
+    const handleDownload = () => {
+        fetch('https://fin-back-odw1.onrender.com/download')
             .then(response => response.blob())
             .then(blob => {
                 const url = window.URL.createObjectURL(new Blob([blob]));
                 const link = document.createElement('a');
                 link.href = url;
-                link.setAttribute('download', 'images_without_alt.pdf');
+                link.setAttribute('download', 'broken_links.pdf');
                 document.body.appendChild(link);
                 link.click();
                 link.parentNode.removeChild(link);
             })
-            .catch(err => console.error('Image Download failed:', err));
+            .catch(err => console.error('Download failed:', err));
     };
 
     return (
         <div>
-            <h1>Crawl Images</h1>
+            <h1>Crawl Links</h1>
             <input
                 type="text"
                 value={url}
                 onChange={(e) => setUrl(e.target.value)}
                 placeholder="Enter URL"
             />
-            <button onClick={handleImageCrawl}>Crawl</button>
-            {data.crawlImagesData.length > 0 && (
+            <button onClick={handleCrawl}>Crawl</button>
+            {data.crawlLinksData.length > 0 && (
                 <div>
-                    <button onClick={handleImageDownload}>Download PDF</button>
+                    <button onClick={handleDownload}>Download PDF</button>
                     <ul>
-                    <div className="container2"><p className="broken">Number of images without alt text found: {data.crawlImagesData.length}</p></div>
-                        {data.crawlImagesData.map((item, index) => (
+                        <div className="container2"><p className="broken">Number of broken links found: {data.crawlLinksData.length}</p></div>
+                        {data.crawlLinksData.map((item, index) => (
                             <li key={index}>
-                                <p><strong>Source Page:</strong> <a href={item.source_page} target="_blank" rel="noopener noreferrer">{item.source_page}</a></p>
-                                <p><strong>Image URL:</strong> <a href={item.image_url} target="_blank" rel="noopener noreferrer">{item.image_url}</a></p>
+                                <p><strong>Source Page:</strong> <a href={item.Source_Page} target="_blank" rel="noopener noreferrer">{item.Source_Page}</a></p>
+                                <p><strong>Link Text:</strong> {item.Link_Text}</p>
+                                <p><strong>Broken Page Link:</strong> <a href={item.Broken_Page_Link} target="_blank" rel="noopener noreferrer">{item.Broken_Page_Link}</a></p>
+                                <p><strong>HTTP Code:</strong> {item.HTTP_Code}</p>
+                                <p><strong>External:</strong> {item.External ? 'Yes' : 'No'}</p>
                             </li>
                         ))}
                     </ul>
                 </div>
             )}
-            {data.loadingImages && <p>Loading...</p>}
-            {data.errorImages && <p>Error: {data.errorImages}</p>}
+            {data.loadingLinks && <p>Loading...</p>}
+            {data.errorLinks && <p>Error: {data.errorLinks}</p>}
         </div>
     );
 }
 
-export default CrawlImages;
+export default CrawlLinks;

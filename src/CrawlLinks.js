@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react';
 import DataContext from './DataContext';
-// import API_URL from './config';
+import CORS from 'CORS'
 
 function CrawlLinks() {
     const { data, setData } = useContext(DataContext);
@@ -9,7 +9,7 @@ function CrawlLinks() {
     const handleCrawl = async () => {
         setData(prevData => ({ ...prevData, loadingLinks: true, errorLinks: null }));
         try {
-            const response = await fetch('https://fin-back-fin-62de7343ac58.herokuapp.com/crawl', {
+            const response = await fetch('https://fin-back-odw1.onrender.com/crawl', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -30,7 +30,7 @@ function CrawlLinks() {
 
     const fetchData = async () => {
         try {
-            const response = await fetch("https://fin-back-fin-62de7343ac58.herokuapp.com/members");
+            const response = await fetch("https://fin-back-odw1.onrender.com/members");
             if (!response.ok) {
                 throw new Error('Failed to fetch data');
             }
@@ -43,7 +43,7 @@ function CrawlLinks() {
     };
 
     const handleDownload = () => {
-        fetch('https://fin-back-fin-62de7343ac58.herokuapp.com/download')
+        fetch('https://fin-back-odw1.onrender.com/download')
             .then(response => response.blob())
             .then(blob => {
                 const url = window.URL.createObjectURL(new Blob([blob]));

@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react';
 import DataContext from './DataContext';
-import CORS from 'CORS'
+// import API_URL from './config';
 
 function CrawlLinks() {
     const { data, setData } = useContext(DataContext);

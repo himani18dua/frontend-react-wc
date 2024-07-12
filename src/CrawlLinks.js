@@ -2,12 +2,12 @@ import React, { useState, useContext } from 'react';
 import DataContext from './DataContext';
 // import API_URL from './config';
 
-function CrawlImages() {
+function CrawlLinks() {
     const { data, setData } = useContext(DataContext);
     const [url, setUrl] = useState('');
 
-    const handleImageCrawl = async () => {
-        setData(prevData => ({ ...prevData, loadingImages: true, errorImages: null }));
+    const handleCrawl = async () => {
+        setData(prevData => ({ ...prevData, loadingLinks: true, errorLinks: null }));
         try {
             const response = await fetch('https://fin-back-odw1.onrender.com/crawl', {
                 method: 'POST',
@@ -18,27 +18,27 @@ function CrawlImages() {
             });
 
             if (!response.ok) {
-                throw new Error('Image Crawl request failed');
+                throw new Error('Crawl request failed');
             }
 
             await new Promise(resolve => setTimeout(resolve, 2000));
-            fetchImageData();
+            fetchData();
         } catch (err) {
-            setData(prevData => ({ ...prevData, errorImages: err.message, crawlImagesData: [], loadingImages: false }));
+            setData(prevData => ({ ...prevData, errorLinks: err.message, crawlLinksData: [], loadingLinks: false }));
         }
     };
 
-    const fetchImageData = async () => {
+    const fetchData = async () => {
         try {
-            const response = await fetch("https://fin-back-odw1.onrender.com/members");
+            const response = await fetch('https://fin-back-odw1.onrender.com/members');
             if (!response.ok) {
-                throw new Error('Failed to fetch image data');
+                throw new Error('Failed to fetch data');
             }
             const data = await response.json();
-            setData(prevData => ({ ...prevData, crawlImagesData: data, loadingImages: false }));
+            setData(prevData => ({ ...prevData, crawlLinksData: data, loadingLinks: false }));
         } catch (error) {
-            console.error('Error fetching image data:', error);
-            setData(prevData => ({ ...prevData, errorImages: 'Failed to fetch image data', loadingImages: false }));
+            console.error('Error fetching data:', error);
+            setData(prevData => ({ ...prevData, errorLinks: 'Failed to fetch data', loadingLinks: false }));
         }
     };
 

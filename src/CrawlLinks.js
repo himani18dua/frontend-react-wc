@@ -72,15 +72,15 @@ function CrawlLinks() {
                     <button onClick={handleDownload}>Download PDF</button>
                     <ul>
                         <div className="container2"><p className="broken">Number of broken links found: {data.crawlLinksData.length}</p></div>
-                        // {data.crawlLinksData.map((item, index) => (
-                        //     <li key={index}>
-                        //         <p><strong>Source Page:</strong> <a href={item.Source_Page} target="_blank" rel="noopener noreferrer">{item.Source_Page}</a></p>
-                        //         <p><strong>Link Text:</strong> {item.Link_Text}</p>
-                        //         <p><strong>Broken Page Link:</strong> <a href={item.Broken_Page_Link} target="_blank" rel="noopener noreferrer">{item.Broken_Page_Link}</a></p>
-                        //         <p><strong>HTTP Code:</strong> {item.HTTP_Code}</p>
-                        //         <p><strong>External:</strong> {item.External ? 'true' : 'false'}</p>
-                        //     </li>
-                        // ))}
+                        {data.crawlLinksData.map((item, index) => (
+                            <li key={index}>
+                                <p><strong>Source Page:</strong> <a href={item.Source_Page} target="_blank" rel="noopener noreferrer">{item.Source_Page}</a></p>
+                                <p><strong>Link Text:</strong> {item.Link_Text}</p>
+                                <p><strong>Broken Page Link:</strong> <a href={item.Broken_Page_Link} target="_blank" rel="noopener noreferrer">{item.Broken_Page_Link}</a></p>
+                                <p><strong>HTTP Code:</strong> {item.HTTP_Code}</p>
+                                <p><strong>External:</strong> {item.External ? 'Yes' : 'No'}</p>
+                            </li>
+                        ))}
                     </ul>
                 </div>
             )}

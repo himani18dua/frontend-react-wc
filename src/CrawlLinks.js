@@ -78,7 +78,7 @@ function CrawlLinks() {
                                 <p><strong>Link Text:</strong> {item.Link_Text}</p>
                                 <p><strong>Broken Page Link:</strong> <a href={item.Broken_Page_Link} target="_blank" rel="noopener noreferrer">{item.Broken_Page_Link}</a></p>
                                 <p><strong>HTTP Code:</strong> {item.HTTP_Code}</p>
-                                <p><strong>External:</strong> {item.External ? 'Yes' : 'No'}</p>
+                                <p><strong>External:</strong> {item.External ? 'true' : 'false'}</p>
                             </li>
                         ))}
                     </ul>

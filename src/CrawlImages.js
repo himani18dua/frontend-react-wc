@@ -8,7 +8,7 @@ function CrawlImages() {
     const handleImageCrawl = async () => {
         setData(prevData => ({ ...prevData, loadingImages: true, errorImages: null }));
         try {
-            const response = await fetch('http://localhost:5000/img-crawl', {
+            const response = await fetch('https://fin-back-odw1.onrender.com/img-crawl', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -29,7 +29,7 @@ function CrawlImages() {
 
     const fetchImageData = async () => {
         try {
-            const response = await fetch("http://localhost:5000/img-members");
+            const response = await fetch("https://fin-back-odw1.onrender.com/img-members");
             if (!response.ok) {
                 throw new Error('Failed to fetch image data');
             }
@@ -42,7 +42,7 @@ function CrawlImages() {
     };
 
     const handleImageDownload = () => {
-        fetch('http://localhost:5000/img-download')
+        fetch('https://fin-back-odw1.onrender.com/img-download')
             .then(response => response.blob())
             .then(blob => {
                 const url = window.URL.createObjectURL(new Blob([blob]));

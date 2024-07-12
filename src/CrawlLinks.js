@@ -1,5 +1,6 @@
 import React, { useState, useContext } from 'react';
 import DataContext from './DataContext';
+// import API_URL from './config';
 
 function CrawlLinks() {
     const { data, setData } = useContext(DataContext);
@@ -8,7 +9,7 @@ function CrawlLinks() {
     const handleCrawl = async () => {
         setData(prevData => ({ ...prevData, loadingLinks: true, errorLinks: null }));
         try {
-            const response = await fetch('https://fin-back-odw1.onrender.com/crawl', {
+            const response = await fetch('https://fin-back-odw1.onrender.com/members', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -21,7 +22,7 @@ function CrawlLinks() {
             }
 
             await new Promise(resolve => setTimeout(resolve, 2000));
-            fetchData(); // Fetching full details after crawl
+            fetchData();
         } catch (err) {
             setData(prevData => ({ ...prevData, errorLinks: err.message, crawlLinksData: [], loadingLinks: false }));
         }
@@ -29,16 +30,12 @@ function CrawlLinks() {
 
     const fetchData = async () => {
         try {
-            const response = await fetch("https://fin-back-odw1.onrender.com/members");
+            const response = await fetch("https://fin-back-odw1.onrender.com/crawl");
             if (!response.ok) {
                 throw new Error('Failed to fetch data');
             }
             const data = await response.json();
-            
-            // Extracting only link names
-            const linkNames = data.map(item => item.Link_Text); // Assuming 'Link_Text' is the field containing link names
-            
-            setData(prevData => ({ ...prevData, crawlLinksData: linkNames, loadingLinks: false }));
+            setData(prevData => ({ ...prevData, crawlLinksData: data, loadingLinks: false }));
         } catch (error) {
             console.error('Error fetching data:', error);
             setData(prevData => ({ ...prevData, errorLinks: 'Failed to fetch data', loadingLinks: false }));
@@ -75,9 +72,13 @@ function CrawlLinks() {
                     <button onClick={handleDownload}>Download PDF</button>
                     <ul>
                         <div className="container2"><p className="broken">Number of broken links found: {data.crawlLinksData.length}</p></div>
-                        {data.crawlLinksData.map((linkName, index) => (
+                        {data.crawlLinksData.map((item, index) => (
                             <li key={index}>
-                                <p><strong>Link Name:</strong> {linkName}</p>
+                                <p><strong>Source Page:</strong> <a href={item.Source_Page} target="_blank" rel="noopener noreferrer">{item.Source_Page}</a></p>
+                                <p><strong>Link Text:</strong> {item.Link_Text}</p>
+                                <p><strong>Broken Page Link:</strong> <a href={item.Broken_Page_Link} target="_blank" rel="noopener noreferrer">{item.Broken_Page_Link}</a></p>
+                                <p><strong>HTTP Code:</strong> {item.HTTP_Code}</p>
+                                <p><strong>External:</strong> {item.External ? 'Yes' : 'No'}</p>
                             </li>
                         ))}
                     </ul>

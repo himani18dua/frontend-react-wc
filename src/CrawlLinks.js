@@ -1,6 +1,5 @@
 import React, { useState, useContext } from 'react';
 import DataContext from './DataContext';
-// import API_URL from './config';
 
 function CrawlLinks() {
     const { data, setData } = useContext(DataContext);
@@ -13,6 +12,7 @@ function CrawlLinks() {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    // Add CORS headers if necessary
                 },
                 body: JSON.stringify({ url }),
             });
@@ -24,6 +24,7 @@ function CrawlLinks() {
             await new Promise(resolve => setTimeout(resolve, 2000));
             fetchData();
         } catch (err) {
+            console.error('Error while crawling:', err);
             setData(prevData => ({ ...prevData, errorLinks: err.message, crawlLinksData: [], loadingLinks: false }));
         }
     };

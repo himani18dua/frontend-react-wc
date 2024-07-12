@@ -1,37 +1,32 @@
 import React, { useState, useContext } from 'react';
 import DataContext from './DataContext';
+// import API_URL from './config';
 
 function CrawlLinks() {
     const { data, setData } = useContext(DataContext);
     const [url, setUrl] = useState('');
 
-  const handleCrawl = async () => {
-    setData(prevData => ({ ...prevData, loadingLinks: true, errorLinks: null }));
+    const handleCrawl = async () => {
+        setData(prevData => ({ ...prevData, loadingLinks: true, errorLinks: null }));
+        try {
+            const response = await fetch('https://fin-back-odw1.onrender.com/crawl', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ url }),
+            });
 
-    try {
-        const response = await fetch('https://fin-back-odw1.onrender.com/crawl', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                // Add any additional headers as needed
-                // Example: Authorization header if required
-                // 'Authorization': 'Bearer <token>',
-            },
-            body: JSON.stringify({ url }),
-        });
+            if (!response.ok) {
+                throw new Error('Crawl request failed');
+            }
 
-        if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            fetchData();
+        } catch (err) {
+            setData(prevData => ({ ...prevData, errorLinks: err.message, crawlLinksData: [], loadingLinks: false }));
         }
-
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        fetchData();
-    } catch (err) {
-        console.error('Error while crawling:', err);
-        setData(prevData => ({ ...prevData, errorLinks: err.message || 'Failed to fetch', crawlLinksData: [], loadingLinks: false }));
-    }
-};
-
+    };
 
     const fetchData = async () => {
         try {

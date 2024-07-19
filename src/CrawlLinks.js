@@ -9,7 +9,7 @@ function CrawlLinks() {
     const handleCrawl = async () => {
         setData(prevData => ({ ...prevData, loadingLinks: true, errorLinks: null }));
         try {
-            const response = await fetch('http://127.0.0.1:5000/crawl', {
+            const response = await fetch('https://fin-back-odw1.onrender.com/crawl', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -32,7 +32,7 @@ function CrawlLinks() {
     const pollStatus = async (task_id) => {
         try {
             const interval = setInterval(async () => {
-                const response = await fetch(`http://127.0.0.1:5000/task-status/${task_id}`);
+                const response = await fetch(`https://fin-back-odw1.onrender.com/task-status/${task_id}`);
                 const result = await response.json();
 
                 if (result.state === 'SUCCESS') {
@@ -50,7 +50,7 @@ function CrawlLinks() {
 
     const fetchData = async () => {
         try {
-            const response = await fetch('http://127.0.0.1:5000/members');
+            const response = await fetch('https://fin-back-odw1.onrender.com/members');
             if (!response.ok) {
                 throw new Error('Failed to fetch data');
             }
@@ -63,7 +63,7 @@ function CrawlLinks() {
     };
 
     const handleDownload = () => {
-        fetch('http://127.0.0.1:5000/download')
+        fetch('https://fin-back-odw1.onrender.com/download')
             .then(response => response.blob())
             .then(blob => {
                 const url = window.URL.createObjectURL(new Blob([blob]));

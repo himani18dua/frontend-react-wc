@@ -4,6 +4,7 @@ import DataContext from './DataContext';
 function CrawlImages() {
     const { data, setData } = useContext(DataContext);
     const [url, setUrl] = useState('');
+    const [taskId, setTaskId] = useState(null);
 
     const handleImageCrawl = async () => {
         setData(prevData => ({ ...prevData, loadingImages: true, errorImages: null }));
@@ -16,14 +17,34 @@ function CrawlImages() {
                 body: JSON.stringify({ url }),
             });
 
+            const result = await response.json();
             if (!response.ok) {
-                throw new Error('Image Crawl request failed');
+                throw new Error(result.error || 'Image Crawl request failed');
             }
 
-            await new Promise(resolve => setTimeout(resolve, 2000));
-            fetchImageData();
+            setTaskId(result.task_id);
+            pollStatus(result.task_id);
         } catch (err) {
             setData(prevData => ({ ...prevData, errorImages: err.message, crawlImagesData: [], loadingImages: false }));
+        }
+    };
+
+    const pollStatus = async (task_id) => {
+        try {
+            const interval = setInterval(async () => {
+                const response = await fetch(`https://fin-back-odw1.onrender.com/task-status/${task_id}`);
+                const result = await response.json();
+
+                if (result.state === 'SUCCESS') {
+                    clearInterval(interval);
+                    fetchImageData();
+                } else if (result.state === 'FAILURE') {
+                    clearInterval(interval);
+                    setData(prevData => ({ ...prevData, errorImages: 'Image Crawl task failed', crawlImagesData: [], loadingImages: false }));
+                }
+            }, 5000);
+        } catch (err) {
+            setData(prevData => ({ ...prevData, errorImages: 'Error polling status', crawlImagesData: [], loadingImages: false }));
         }
     };
 
@@ -70,7 +91,7 @@ function CrawlImages() {
                 <div>
                     <button onClick={handleImageDownload}>Download PDF</button>
                     <ul>
-                    <div className="container2"><p className="broken">Number of images without alt text found: {data.crawlImagesData.length}</p></div>
+                        <div className="container2"><p className="broken">Number of images without alt text found: {data.crawlImagesData.length}</p></div>
                         {data.crawlImagesData.map((item, index) => (
                             <li key={index}>
                                 <p><strong>Source Page:</strong> <a href={item.source_page} target="_blank" rel="noopener noreferrer">{item.source_page}</a></p>

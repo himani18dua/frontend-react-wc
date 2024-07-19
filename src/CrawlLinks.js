@@ -4,11 +4,12 @@ import DataContext from './DataContext';
 function CrawlLinks() {
     const { data, setData } = useContext(DataContext);
     const [url, setUrl] = useState('');
+    const [taskId, setTaskId] = useState(null);
 
     const handleCrawl = async () => {
         setData(prevData => ({ ...prevData, loadingLinks: true, errorLinks: null }));
         try {
-            const response = await fetch('https://fin-back-odw1.onrender.com/crawl', {
+            const response = await fetch('http://127.0.0.1:5000/crawl', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -16,20 +17,40 @@ function CrawlLinks() {
                 body: JSON.stringify({ url }),
             });
 
+            const result = await response.json();
             if (!response.ok) {
-                throw new Error('Crawl request failed');
+                throw new Error(result.error || 'Crawl request failed');
             }
 
-            await new Promise(resolve => setTimeout(resolve, 2000));
-            fetchData();
+            setTaskId(result.task_id);
+            pollStatus(result.task_id);
         } catch (err) {
             setData(prevData => ({ ...prevData, errorLinks: err.message, crawlLinksData: [], loadingLinks: false }));
         }
     };
 
+    const pollStatus = async (task_id) => {
+        try {
+            const interval = setInterval(async () => {
+                const response = await fetch(`http://127.0.0.1:5000/task-status/${task_id}`);
+                const result = await response.json();
+
+                if (result.state === 'SUCCESS') {
+                    clearInterval(interval);
+                    fetchData();
+                } else if (result.state === 'FAILURE') {
+                    clearInterval(interval);
+                    setData(prevData => ({ ...prevData, errorLinks: 'Crawl task failed', crawlLinksData: [], loadingLinks: false }));
+                }
+            }, 5000);
+        } catch (err) {
+            setData(prevData => ({ ...prevData, errorLinks: 'Error polling status', crawlLinksData: [], loadingLinks: false }));
+        }
+    };
+
     const fetchData = async () => {
         try {
-            const response = await fetch('https://fin-back-odw1.onrender.com/members');
+            const response = await fetch('http://127.0.0.1:5000/members');
             if (!response.ok) {
                 throw new Error('Failed to fetch data');
             }
@@ -42,7 +63,7 @@ function CrawlLinks() {
     };
 
     const handleDownload = () => {
-        fetch('https://fin-back-odw1.onrender.com/download')
+        fetch('http://127.0.0.1:5000/download')
             .then(response => response.blob())
             .then(blob => {
                 const url = window.URL.createObjectURL(new Blob([blob]));
